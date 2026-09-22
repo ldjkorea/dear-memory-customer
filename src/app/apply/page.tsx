@@ -66,9 +66,13 @@ function ApplyFormContent() {
 
   const [productId, setProductId] = useState<string>(paramProduct);
   const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>(paramOptions);
+  const [sundayPromotionAgreed, setSundayPromotionAgreed] = useState(paramDiscounts.includes('sunday'));
   const [portfolioAgreed, setPortfolioAgreed] = useState(paramDiscounts.includes('portfolio'));
   const [mateDiscountInfo, setMateDiscountInfo] = useState(
     paramDiscounts.includes('partner') ? '짝꿍할인 신청' : ''
+  );
+  const [reviewPromotionAgreed, setReviewPromotionAgreed] = useState(
+    paramDiscounts.includes('review_contract') || paramDiscounts.includes('review')
   );
 
   // 5. 요청사항 및 기타
@@ -96,12 +100,25 @@ function ApplyFormContent() {
     const discStr = searchParams.get('discounts');
     if (discStr !== null) {
       const discs = discStr.split(',').filter(Boolean);
+      setSundayPromotionAgreed(discs.includes('sunday'));
       setPortfolioAgreed(discs.includes('portfolio'));
       if (discs.includes('partner') && !mateDiscountInfo) {
         setMateDiscountInfo('짝꿍할인 신청');
       }
+      setReviewPromotionAgreed(discs.includes('review_contract') || discs.includes('review'));
     }
   }, [searchParams, products]);
+
+  // 예식 일자가 일요일인지 감지하여 자동 추천/체크
+  const handleWeddingDateChange = (dateVal: string) => {
+    setWeddingDate(dateVal);
+    if (dateVal) {
+      const d = new Date(dateVal);
+      if (!isNaN(d.getTime()) && d.getDay() === 0) {
+        setSundayPromotionAgreed(true);
+      }
+    }
+  };
 
   const toggleOption = (id: string) => {
     setSelectedOptionIds((prev) =>
@@ -113,15 +130,18 @@ function ApplyFormContent() {
     setExpandedArticles((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // 실시간 예상 견적 계산
+  // 실시간 예상 견적 계산 (4대 혜택 전액 반영)
   const selectedProduct = products.find((p) => p.id === productId) || products[0];
   const productPrice = selectedProduct?.base_price || 0;
   const optionsPrice = options
     .filter((o) => selectedOptionIds.includes(o.id))
     .reduce((sum, o) => sum + o.price, 0);
+
+  const sundayDiscount = sundayPromotionAgreed ? 100000 : 0;
   const portfolioDiscount = portfolioAgreed ? 100000 : 0;
   const mateDiscount = mateDiscountInfo.trim() ? 50000 : 0;
-  const totalDiscounts = portfolioDiscount + mateDiscount;
+  const reviewDiscount = reviewPromotionAgreed ? 50000 : 0;
+  const totalDiscounts = sundayDiscount + portfolioDiscount + mateDiscount + reviewDiscount;
   const estimatedTotal = Math.max(0, productPrice + optionsPrice - totalDiscounts);
 
   const handleStep1Proceed = () => {
@@ -173,8 +193,10 @@ function ApplyFormContent() {
       const idempotencyKey = `app-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
       const selectedDiscountIds = [
+        ...(sundayPromotionAgreed ? ['sunday'] : []),
         ...(portfolioAgreed ? ['portfolio'] : []),
         ...(mateDiscountInfo.trim() ? ['partner'] : []),
+        ...(reviewPromotionAgreed ? ['review_contract'] : []),
       ];
 
       const created = await RequestService.submitRequest({
@@ -194,7 +216,9 @@ function ApplyFormContent() {
           retouchRequests && `[보정 요청] ${retouchRequests}`,
           makeupVenue && `[메이크업] ${makeupVenue} (아웃: ${makeupOutTime || '미정'})`,
           (groomFamily || brideFamily) && `[직계가족] 신랑(${groomFamily || '-'}) / 신부(${brideFamily || '-'})`,
+          sundayPromotionAgreed && `[프로모션] 일요일 예식 프로모션 할인 신청`,
           mateDiscountInfo && `[짝꿍할인] ${mateDiscountInfo}`,
+          reviewPromotionAgreed && `[후기할인] 계약 후기 작성 혜택 신청`,
           snsAccount && `[SNS] ${snsAccount}`,
           otherRequests && `[기타] ${otherRequests}`,
         ]
@@ -458,7 +482,7 @@ function ApplyFormContent() {
                   type="date"
                   required
                   value={weddingDate}
-                  onChange={(e) => setWeddingDate(e.target.value)}
+                  onChange={(e) => handleWeddingDateChange(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-[#e8e2d8] focus:border-[#8f7a56] focus:outline-none text-xs bg-white"
                 />
               </div>
@@ -653,13 +677,41 @@ function ApplyFormContent() {
 
           {/* 6. 할인 및 혜택 신청 */}
           <div className="space-y-4 pt-4 border-t border-[#f1ede7]">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6e5c3d] flex items-center gap-1.5">
-              <Gift className="w-3.5 h-3.5 text-[#8f7a56]" />
-              <span>6. 혜택 및 할인 신청</span>
-            </h3>
+            <div className="flex justify-between items-center">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6e5c3d] flex items-center gap-1.5">
+                <Gift className="w-3.5 h-3.5 text-[#8f7a56]" />
+                <span>6. 혜택 및 할인 신청 (중복 적용 가능)</span>
+              </h3>
+              {totalDiscounts > 0 && (
+                <span className="text-xs font-serif font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  총 {totalDiscounts.toLocaleString()}원 할인 적용 중
+                </span>
+              )}
+            </div>
 
             <div className="space-y-3">
-              {/* 포트폴리오 동의 */}
+              {/* 1. 일요일 예식 프로모션 */}
+              <label className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-[#e8e2d8] cursor-pointer hover:border-[#8f7a56] transition-colors">
+                <input
+                  type="checkbox"
+                  checked={sundayPromotionAgreed}
+                  onChange={(e) => setSundayPromotionAgreed(e.target.checked)}
+                  className="mt-0.5 rounded border-[#c7b698] text-[#8f7a56] focus:ring-[#8f7a56]"
+                />
+                <div className="text-xs flex-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-[#2b261f]">
+                      일요일 예식 프로모션 (일요일 예식 시 -10만원 할인)
+                    </span>
+                    <span className="text-xs font-bold text-emerald-600">-100,000원</span>
+                  </div>
+                  <p className="text-[#73695c] mt-0.5 text-[11px]">
+                    일요일에 예식을 진행하시는 신랑·신부님께 드리는 특별 일정 혜택입니다.
+                  </p>
+                </div>
+              </label>
+
+              {/* 2. 포트폴리오 동의 */}
               <label className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-[#e8e2d8] cursor-pointer hover:border-[#8f7a56] transition-colors">
                 <input
                   type="checkbox"
@@ -680,20 +732,44 @@ function ApplyFormContent() {
                 </div>
               </label>
 
-              {/* 짝꿍할인 */}
+              {/* 3. 짝꿍할인 */}
               <div className="p-4 rounded-2xl bg-white border border-[#e8e2d8] space-y-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-semibold text-[#2b261f]">짝꿍할인 (선택)</span>
-                  <span className="text-[11px] text-[#8f7a56]">-50,000원 (확인 후 적용)</span>
+                  <span className="font-semibold text-[#2b261f]">짝꿍 추천 할인 (추천 시 -5만원 할인)</span>
+                  <span className="text-xs font-bold text-emerald-600">-50,000원</span>
                 </div>
+                <p className="text-[#73695c] text-[11px]">
+                  기존 계약자 또는 신규 계약자와 상호 추천 시 각각 5만원 잔금 할인 (추천인 확인 후 적용)
+                </p>
                 <input
                   type="text"
                   value={mateDiscountInfo}
                   onChange={(e) => setMateDiscountInfo(e.target.value)}
-                  placeholder='상대방 "예식일_성함" 입력 (예: 250522_김철수 / 없다면 생략)'
+                  placeholder='상대방 "예식일_성함" 입력 (예: 250522_김철수 / 모를 경우 "짝꿍할인 신청" 기재)'
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#e8e2d8] focus:border-[#8f7a56] focus:outline-none text-xs bg-[#faf8f5]"
                 />
               </div>
+
+              {/* 4. 계약 후기 작성 혜택 */}
+              <label className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-[#e8e2d8] cursor-pointer hover:border-[#8f7a56] transition-colors">
+                <input
+                  type="checkbox"
+                  checked={reviewPromotionAgreed}
+                  onChange={(e) => setReviewPromotionAgreed(e.target.checked)}
+                  className="mt-0.5 rounded border-[#c7b698] text-[#8f7a56] focus:ring-[#8f7a56]"
+                />
+                <div className="text-xs flex-1">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-[#2b261f]">
+                      계약 후기 작성 혜택 (작성 약속 시 -5만원 할인)
+                    </span>
+                    <span className="text-xs font-bold text-emerald-600">-50,000원</span>
+                  </div>
+                  <p className="text-[#73695c] mt-0.5 text-[11px]">
+                    웨딩 커뮤니티(다이렉트, 멕마웨 등) 또는 블로그에 계약 후기 작성 시 잔금에서 차감됩니다.
+                  </p>
+                </div>
+              </label>
             </div>
           </div>
 
@@ -796,8 +872,15 @@ function ApplyFormContent() {
             <div className="text-xs text-[#c9bfaf] space-y-1">
               <p>• 선택 상품: {selectedProduct.name} ({productPrice.toLocaleString()}원)</p>
               {optionsPrice > 0 && <p>• 추가 옵션: +{optionsPrice.toLocaleString()}원</p>}
-              {portfolioDiscount > 0 && <p>• 포트폴리오 할인: -100,000원</p>}
-              {mateDiscount > 0 && <p>• 짝꿍할인: -50,000원 (검토 후 반영)</p>}
+              {sundayDiscount > 0 && <p className="text-[#c7b698]">• 일요일 예식 프로모션: -100,000원</p>}
+              {portfolioDiscount > 0 && <p className="text-[#c7b698]">• 포트폴리오 활용 동의: -100,000원</p>}
+              {mateDiscount > 0 && <p className="text-[#c7b698]">• 짝꿍 추천 할인: -50,000원 (확인 후 적용)</p>}
+              {reviewDiscount > 0 && <p className="text-[#c7b698]">• 계약 후기 작성 혜택: -50,000원</p>}
+              {totalDiscounts > 0 && (
+                <p className="text-white font-medium pt-1 border-t border-[#473e32]/60 mt-1">
+                  총 적용 할인 혜택: <span className="text-[#c7b698] font-bold">-{totalDiscounts.toLocaleString()}원</span>
+                </p>
+              )}
               <p className="text-[11px] text-[#9e9484] pt-1">
                 ※ 계약금(예약금)은 300,000원이며, 신청서 제출 후 대표작가의 일정 검토가 완료되면 정식 계약서와 함께 계좌 안내가 발송됩니다.
               </p>

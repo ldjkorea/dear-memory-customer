@@ -166,9 +166,17 @@ export function PriceEstimator({ defaultProductId = 'album_plus' }: { defaultPro
                 </div>
               )}
               {estimate.discountsTotal > 0 && (
-                <div className="flex justify-between text-[#c7b698]">
-                  <span>신청 혜택 ({estimate.selectedDiscounts.length}개)</span>
-                  <span>-{estimate.discountsTotal.toLocaleString()}원</span>
+                <div className="space-y-1 pt-1 border-t border-[#473e32]/40">
+                  <div className="flex justify-between text-[#c7b698] font-medium">
+                    <span>신청 혜택 ({estimate.selectedDiscounts.length}개)</span>
+                    <span>-{estimate.discountsTotal.toLocaleString()}원</span>
+                  </div>
+                  {estimate.selectedDiscounts.map((disc) => (
+                    <div key={disc.id} className="flex justify-between text-[11px] text-[#c9bfaf] pl-1.5">
+                      <span>• {disc.name}</span>
+                      <span>-{disc.amount.toLocaleString()}원</span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
