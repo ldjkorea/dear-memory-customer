@@ -1,5 +1,5 @@
 import React from 'react';
-import ContractTokenClient from './ContractTokenClient';
+import ContractTokenClient from '@/app/contract/[token]/ContractTokenClient';
 
 export async function generateStaticParams() {
   return [
@@ -11,6 +11,6 @@ export async function generateStaticParams() {
   ];
 }
 
-export default function CustomerContractPage() {
+export default function CustomerContractsAliasPage() {
   return <ContractTokenClient />;
 }

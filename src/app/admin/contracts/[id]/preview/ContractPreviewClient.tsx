@@ -52,9 +52,14 @@ export default function AdminContractPreviewPageClient() {
     if (id) loadData();
   }, [id]);
 
+  const basePath =
+    typeof window !== 'undefined' && window.location.pathname.startsWith('/dear-memory-customer')
+      ? '/dear-memory-customer'
+      : '';
+
   const customerUrl =
     typeof window !== 'undefined' && contract
-      ? `${window.location.origin}/contract/${contract.access_token}`
+      ? `${window.location.origin}${basePath}/contract/${contract.access_token}`
       : '';
 
   const handleCopyLink = () => {
@@ -164,7 +169,7 @@ export default function AdminContractPreviewPageClient() {
             <span>{copied ? '링크 복사됨!' : '고객 서명 링크 복사'}</span>
           </button>
 
-          <a
+          <Link
             href={`/contract/${contract.access_token}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -172,7 +177,7 @@ export default function AdminContractPreviewPageClient() {
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span>고객 화면 확인</span>
-          </a>
+          </Link>
 
           <button
             type="button"

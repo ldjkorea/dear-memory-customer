@@ -1,17 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ContractRepository } from '@/repositories/contractRepository';
 import { ContractService } from '@/services/contractService';
 import { Contract, ContractVersion } from '@/types/contract';
 import { ContractView } from '@/components/contracts/ContractView';
 import { ShieldCheck, AlertCircle, ArrowRight } from 'lucide-react';
 
-export default function ContractTokenClient() {
+function ContractContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = params.token as string;
+  
+  const pathToken = (params?.token as string) || '';
+  const queryToken = searchParams?.get('token') || '';
+  const targetToken = queryToken || pathToken;
 
   const [contract, setContract] = useState<Contract | null>(null);
   const [version, setVersion] = useState<ContractVersion | null>(null);
@@ -27,7 +31,7 @@ export default function ContractTokenClient() {
   useEffect(() => {
     async function loadContract() {
       try {
-        const ctr = await ContractRepository.getContractByToken(token);
+        const ctr = await ContractRepository.getContractByToken(targetToken);
         if (!ctr) {
           setError('유효하지 않거나 만료된 계약서 링크입니다.');
           setLoading(false);
@@ -50,10 +54,13 @@ export default function ContractTokenClient() {
       }
     }
 
-    if (token) {
+    if (targetToken) {
       loadContract();
+    } else {
+      setLoading(false);
+      setError('계약서 토큰이 전달되지 않았습니다.');
     }
-  }, [token]);
+  }, [targetToken]);
 
   const handleAgree = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,14 +78,14 @@ export default function ContractTokenClient() {
 
     try {
       setSubmitting(true);
-      const res = await ContractService.submitConsent(token, {
+      const res = await ContractService.submitConsent(targetToken, {
         terms_agreed: termsAgreed,
         portfolio_agreed: portfolioAgreed,
         signer_name: signerName.trim(),
       });
 
       if (res.success) {
-        router.push(`/contract/${token}/complete`);
+        router.push(`/contract/${targetToken}/complete`);
       } else {
         alert(res.message);
         setSubmitting(false);
@@ -137,7 +144,7 @@ export default function ContractTokenClient() {
             </p>
             <button
               type="button"
-              onClick={() => router.push(`/contract/${token}/complete`)}
+              onClick={() => router.push(`/contract/${targetToken}/complete`)}
               className="px-6 py-3 bg-[#2b261f] text-white rounded-full text-xs hover:bg-[#473e32] transition-colors"
             >
               예약금 입금 계좌 및 안내 다시 보기
@@ -220,3 +227,12 @@ export default function ContractTokenClient() {
     </div>
   );
 }
+
+export default function ContractTokenClient() {
+  return (
+    <Suspense fallback={<div className="py-24 text-center text-xs text-[#8f7a56]">계약 정보를 불러오는 중입니다...</div>}>
+      <ContractContent />
+    </Suspense>
+  );
+}
+
