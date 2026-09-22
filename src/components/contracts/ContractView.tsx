@@ -1,6 +1,6 @@
 import React from 'react';
 import { ContractSnapshot } from '@/types/contract';
-import { Camera, Calendar, MapPin, Check, ShieldCheck } from 'lucide-react';
+import { Camera, Calendar, MapPin, Check, ShieldCheck, Printer, Download } from 'lucide-react';
 
 interface Props {
   snapshot: ContractSnapshot;
@@ -8,8 +8,27 @@ interface Props {
 }
 
 export function ContractView({ snapshot, isDraft = false }: Props) {
+  const handlePrint = () => {
+    if (typeof window !== 'undefined') {
+      window.print();
+    }
+  };
+
   return (
-    <div className="bg-white rounded-3xl border border-[#e8e2d8] p-8 sm:p-12 shadow-sm text-[#2b261f]">
+    <div className="bg-white rounded-3xl border border-[#e8e2d8] p-8 sm:p-12 shadow-sm text-[#2b261f] print:p-0 print:border-none print:shadow-none">
+      {/* Print Action Bar (화면에서만 노출, 인쇄 시 자동 숨김) */}
+      <div className="flex justify-end mb-4 print:hidden">
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="px-4 py-2 bg-[#2b261f] hover:bg-[#473e32] text-[#faf8f5] rounded-full text-xs font-medium flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+          title="A4 규격 PDF로 저장하거나 종이로 인쇄합니다"
+        >
+          <Printer className="w-3.5 h-3.5" />
+          <span>계약서 PDF 저장 / 인쇄</span>
+        </button>
+      </div>
+
       {/* Header */}
       <div className="border-b border-[#e8e2d8] pb-6 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
@@ -26,7 +45,7 @@ export function ContractView({ snapshot, isDraft = false }: Props) {
 
         <div className="text-left sm:text-right">
           {isDraft && (
-            <span className="inline-block px-2.5 py-0.5 bg-amber-100 text-amber-800 text-[11px] font-medium rounded-full mb-1">
+            <span className="inline-block px-2.5 py-0.5 bg-amber-100 text-amber-800 text-[11px] font-medium rounded-full mb-1 print:hidden">
               DRAFT / 검토용
             </span>
           )}

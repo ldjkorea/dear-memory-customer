@@ -10,7 +10,8 @@ import { Contract, ContractVersion } from '@/types/contract';
 import { Payment } from '@/types/booking';
 import { ContractView } from '@/components/contracts/ContractView';
 import { BookingActionModal } from '@/components/admin/BookingActionModal';
-import { ArrowLeft, Copy, ExternalLink, Edit3, DollarSign, History } from 'lucide-react';
+import { EmailService } from '@/services/emailService';
+import { ArrowLeft, Copy, ExternalLink, Edit3, DollarSign, History, Mail } from 'lucide-react';
 
 export default function AdminContractPreviewPageClient() {
   const params = useParams();
@@ -96,6 +97,21 @@ export default function AdminContractPreviewPageClient() {
     }
   };
 
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  const handleResendEmail = async () => {
+    if (!contract || !activeVersion) return;
+    try {
+      setSendingEmail(true);
+      await EmailService.sendContractToCustomer(contract, activeVersion);
+      alert(`[${activeVersion.snapshot.customer_name}] 고객님에게 계약서 안내 메일이 발송되었습니다.`);
+    } catch (e: any) {
+      alert('이메일 발송 중 오류가 발생했습니다.');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
   if (loading) {
     return <div className="py-12 text-center text-xs text-[#8f7a56]">계약 정보를 불러오는 중...</div>;
   }
@@ -127,6 +143,18 @@ export default function AdminContractPreviewPageClient() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          {/* 고객 이메일로 계약서 재전송 */}
+          <button
+            type="button"
+            onClick={handleResendEmail}
+            disabled={sendingEmail}
+            className="px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+            title="신부 이메일로 계약서 링크 및 요약을 전송합니다"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>{sendingEmail ? '전송 중...' : '신부 메일로 계약서 전송'}</span>
+          </button>
+
           <button
             type="button"
             onClick={handleCopyLink}

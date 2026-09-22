@@ -29,3 +29,22 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #b5a48e;
 }
+
+/* A4 계약서 인쇄 및 PDF 저장 전용 스타일 */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, footer, nav, button {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  @page {
+    size: A4;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+}

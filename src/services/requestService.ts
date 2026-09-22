@@ -5,6 +5,7 @@
 import { CustomerRequest, RepresentativeReview, RequestType } from '@/types/customer';
 import { RequestRepository } from '@/repositories/requestRepository';
 import { CatalogService } from './catalogService';
+import { EmailService } from './emailService';
 
 export class RequestService {
   /**
@@ -68,7 +69,16 @@ export class RequestService {
       updated_at: new Date().toISOString(),
     };
 
-    return await RequestRepository.create(newRequest);
+    const created = await RequestRepository.create(newRequest);
+
+    // 대표 이메일로 자동 알림 발송
+    try {
+      await EmailService.sendInquiryNotificationToAdmin(created);
+    } catch (e) {
+      console.warn('[RequestService] 대표 알림 이메일 발송 실패 (무시):', e);
+    }
+
+    return created;
   }
 
   /**

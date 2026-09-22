@@ -9,6 +9,7 @@ import { ContractRepository } from '@/repositories/contractRepository';
 import { RequestRepository } from '@/repositories/requestRepository';
 import { CatalogService } from './catalogService';
 import { PolicyService } from './policyService';
+import { EmailService } from './emailService';
 
 export class ContractService {
   /**
@@ -137,6 +138,13 @@ export class ContractService {
     await ContractRepository.saveVersion(version);
     await ContractRepository.saveContract(contract);
     await RequestRepository.update(requestId, { status: 'contracted' });
+
+    // 신부 이메일로 계약서 링크 및 요약 자동 발송
+    try {
+      await EmailService.sendContractToCustomer(contract, version);
+    } catch (e) {
+      console.warn('[ContractService] 신부 계약서 이메일 발송 실패 (무시):', e);
+    }
 
     return { contract, version };
   }
