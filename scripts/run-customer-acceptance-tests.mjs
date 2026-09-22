@@ -134,8 +134,9 @@ async function runAllAcceptanceTests() {
   // -----------------------------------------------------------------
   console.log('▶ Test 6: Catalog 가격 변경 시 기존 ContractVersion Snapshot의 불변성 검증');
   // Config의 화보형 가격을 임의로 1,450,000 -> 1,600,000으로 인상 시뮬레이션
-  const originalPrice = PRODUCTS_CONFIG[1].base_price;
-  PRODUCTS_CONFIG[1].base_price = 1600000;
+  const targetProduct = CatalogService.getProductById('album_plus');
+  const originalPrice = targetProduct.base_price;
+  targetProduct.base_price = 1600000;
 
   // CatalogService는 인상된 160만을 반환하지만...
   assert(CatalogService.getProductById('album_plus')?.base_price === 1600000, '현재 Config 상의 화보형 가격은 160만으로 변경됨');
@@ -146,8 +147,8 @@ async function runAllAcceptanceTests() {
   assert(loadedVersion?.snapshot.final_total_price === 1500000, '기존 계약 스냅샷의 최종 총액도 1,500,000원으로 불변이어야 함');
 
   // Config 원복
-  PRODUCTS_CONFIG[1].base_price = originalPrice;
-  assert(PRODUCTS_CONFIG[1].base_price === 1450000, '테스트 후 Config 가격 원복 확인');
+  targetProduct.base_price = originalPrice;
+  assert(CatalogService.getProductById('album_plus')?.base_price === 1450000, '테스트 후 Config 가격 원복 확인');
   console.log('');
 
   // -----------------------------------------------------------------
