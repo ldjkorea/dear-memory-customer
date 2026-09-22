@@ -5,6 +5,9 @@
 
 import { CustomerAppState, IStorageAdapter } from './types';
 import { DEMO_REQUESTS, DEMO_CONTRACTS, DEMO_CONTRACT_VERSIONS } from '@/config/demoData';
+import { PRODUCTS_CONFIG } from '@/config/products';
+import { OPTIONS_CONFIG } from '@/config/options';
+import { DISCOUNTS_CONFIG } from '@/config/discounts';
 
 const STORAGE_KEY = 'dear_memory_customer_v2';
 
@@ -15,6 +18,9 @@ export function getInitialDemoState(): CustomerAppState {
     contractVersions: [...DEMO_CONTRACT_VERSIONS],
     bookings: [],
     payments: [],
+    products: [...PRODUCTS_CONFIG],
+    options: [...OPTIONS_CONFIG],
+    discounts: [...DISCOUNTS_CONFIG],
     lastUpdated: new Date().toISOString(),
   };
 }
@@ -47,8 +53,17 @@ export class LocalStorageAdapter implements IStorageAdapter {
       if (!parsed.contracts || parsed.contracts.length === 0) {
         parsed.contracts = [...DEMO_CONTRACTS];
         parsed.contractVersions = [...DEMO_CONTRACT_VERSIONS];
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
       }
+      if (!parsed.products || parsed.products.length === 0) {
+        parsed.products = [...PRODUCTS_CONFIG];
+      }
+      if (!parsed.options || parsed.options.length === 0) {
+        parsed.options = [...OPTIONS_CONFIG];
+      }
+      if (!parsed.discounts || parsed.discounts.length === 0) {
+        parsed.discounts = [...DISCOUNTS_CONFIG];
+      }
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
       return parsed;
     } catch (e) {
       console.warn('[LocalStorageAdapter] 로드 실패, 기본 상태로 복원합니다:', e);

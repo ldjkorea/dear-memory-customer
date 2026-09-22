@@ -134,7 +134,7 @@ export default function AdminDashboardPage() {
       {/* Header & Export Action */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-serif text-[#2b261f]">운영 현황 대시보드</h1>
+          <h1 className="text-xl sm:text-2xl font-serif text-[#2b261f]">운영 현황 대시보드</h1>
           <p className="text-xs text-[#5c5549] mt-1">
             신규 접수, 이번 주말 예식 체크리스트, 계약 현황을 통합 관리합니다.
           </p>
@@ -143,25 +143,25 @@ export default function AdminDashboardPage() {
         <button
           type="button"
           onClick={handleExportCSV}
-          className="px-4 py-2.5 bg-[#8f7a56] hover:bg-[#a68e65] text-white rounded-xl text-xs font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
+          className="w-full sm:w-auto justify-center px-4 py-2.5 bg-[#8f7a56] hover:bg-[#a68e65] text-white rounded-xl text-xs font-medium flex items-center gap-2 shadow-sm transition-colors cursor-pointer"
           title="왈라에서 안 되던 엑셀 저장을 원클릭으로 다운로드합니다"
         >
-          <Download className="w-4 h-4" />
+          <Download className="w-4 h-4 shrink-0" />
           <span>전체 계약/신청 명단 Excel(CSV) 다운로드</span>
         </button>
       </div>
 
       {/* ⭐️ 이번 주말 / 다가오는 예식 일정 집중 체크리스트 (민규 대표님 1순위 필요 기능) */}
-      <div className="bg-gradient-to-br from-[#2b261f] to-[#3d362d] text-white p-6 sm:p-7 rounded-3xl shadow-lg border border-[#473e32] space-y-4">
+      <div className="bg-gradient-to-br from-[#2b261f] to-[#3d362d] text-white p-5 sm:p-7 rounded-3xl shadow-lg border border-[#473e32] space-y-4">
         <div className="flex justify-between items-center border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-[#c7b698]" />
-            <h2 className="text-base sm:text-lg font-serif tracking-wide text-white">
+            <Calendar className="w-5 h-5 text-[#c7b698] shrink-0" />
+            <h2 className="text-sm sm:text-base font-serif tracking-wide text-white">
               이번 주말 & 다가오는 예식 체크리스트 (D-Day 점검)
             </h2>
           </div>
-          <span className="text-xs text-[#c7b698] font-mono">
-            등록된 일정 {upcomingSchedules.length}건
+          <span className="text-xs text-[#c7b698] font-mono whitespace-nowrap">
+            등록 {upcomingSchedules.length}건
           </span>
         </div>
 
@@ -172,48 +172,50 @@ export default function AdminDashboardPage() {
             {upcomingSchedules.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 space-y-2.5 text-xs hover:bg-white/15 transition-colors"
+                className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 space-y-2.5 text-xs hover:bg-white/15 transition-colors flex flex-col justify-between"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="font-semibold text-white text-sm block">
-                      {item.customer_name}
-                    </span>
-                    <span className="text-[11px] text-[#c7b698]">
-                      {item.wedding_date} {item.wedding_time}
+                <div>
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <span className="font-semibold text-white text-sm block truncate">
+                        {item.customer_name}
+                      </span>
+                      <span className="text-[11px] text-[#c7b698] whitespace-nowrap">
+                        {item.wedding_date} {item.wedding_time}
+                      </span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#c7b698] text-[#2b261f] font-bold shrink-0">
+                      D-Day
                     </span>
                   </div>
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-[#c7b698] text-[#2b261f] font-bold">
-                    D-Day
-                  </span>
-                </div>
 
-                <div className="space-y-1 text-[11.5px] text-[#e8e2d8] border-t border-white/10 pt-2">
-                  <p className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#c7b698] shrink-0" />
-                    <span>{item.venue} {item.hall_name && `(${item.hall_name})`}</span>
-                  </p>
-                  <p className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[#c7b698] shrink-0" />
-                    <span>
-                      메이크업: {item.makeup_venue || '미정'} (아웃: {item.makeup_out_time || '미정'})
-                    </span>
-                  </p>
-                  <p className="flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-[#c7b698] shrink-0" />
-                    <span>신부: {item.bride_phone || item.contact_value} / 신랑: {item.groom_phone || '-'}</span>
-                  </p>
-                  {item.shooting_requests && (
-                    <p className="text-[11px] text-[#c7b698] line-clamp-1 mt-1">
-                      💡 요청: {item.shooting_requests}
+                  <div className="space-y-1.5 text-[11.5px] text-[#e8e2d8] border-t border-white/10 pt-2.5 mt-2.5 break-keep">
+                    <p className="flex items-start gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-[#c7b698] shrink-0 mt-0.5" />
+                      <span className="leading-snug">{item.venue} {item.hall_name && `(${item.hall_name})`}</span>
                     </p>
-                  )}
+                    <p className="flex items-start gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-[#c7b698] shrink-0 mt-0.5" />
+                      <span className="leading-snug">
+                        메이크업: {item.makeup_venue || '미정'} (아웃: {item.makeup_out_time || '미정'})
+                      </span>
+                    </p>
+                    <p className="flex items-start gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-[#c7b698] shrink-0 mt-0.5" />
+                      <span className="leading-snug">신부: {item.bride_phone || item.contact_value} / 신랑: {item.groom_phone || '-'}</span>
+                    </p>
+                    {item.shooting_requests && (
+                      <p className="text-[11px] text-[#c7b698] line-clamp-1 mt-1 leading-snug">
+                        💡 요청: {item.shooting_requests}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="pt-1">
+                <div className="pt-3">
                   <Link
                     href={`/admin/requests/${item.id}`}
-                    className="w-full py-1.5 bg-white text-[#2b261f] rounded-lg text-center block text-[11px] font-semibold hover:bg-[#faf8f5]"
+                    className="w-full py-1.5 bg-white text-[#2b261f] rounded-lg text-center block text-[11px] font-semibold hover:bg-[#faf8f5] transition-colors"
                   >
                     상세 및 계약 확인 →
                   </Link>
@@ -291,9 +293,9 @@ export default function AdminDashboardPage() {
         ) : (
           <div className="divide-y divide-[#f1ede7]">
             {requests.slice(0, 5).map((req) => (
-              <div key={req.id} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-xs">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
+              <div key={req.id} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 text-xs">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
                     <span className="font-semibold text-[#2b261f]">{req.customer_name}</span>
                     <span
                       className={`px-2 py-0.5 rounded text-[10px] ${
@@ -306,14 +308,14 @@ export default function AdminDashboardPage() {
                     </span>
                     <span className="text-[#9e9484] font-mono text-[11px]">{req.request_number}</span>
                   </div>
-                  <p className="text-[#5c5549]">
+                  <p className="text-[#5c5549] text-[11.5px] truncate max-w-full sm:max-w-xl">
                     {req.wedding_date} {req.wedding_time} | {req.venue} {req.hall_name && `(${req.hall_name})`}
                     {req.makeup_venue && ` | 메이크업: ${req.makeup_venue}`}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] px-2 py-1 rounded bg-[#faf8f5] text-[#6e5c3d] border border-[#e8e2d8]">
+                <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                  <span className="text-[11px] px-2 py-1 rounded bg-[#faf8f5] text-[#6e5c3d] border border-[#e8e2d8] whitespace-nowrap">
                     {req.status === 'new' && '신규 접수'}
                     {req.status === 'reviewing' && '대표 검토 중'}
                     {req.status === 'ready_for_contract' && '계약 준비 완료'}
@@ -322,7 +324,7 @@ export default function AdminDashboardPage() {
                   </span>
                   <Link
                     href={`/admin/requests/${req.id}`}
-                    className="px-3 py-1.5 bg-[#2b261f] hover:bg-[#473e32] text-white rounded-lg text-xs"
+                    className="px-3 py-1.5 bg-[#2b261f] hover:bg-[#473e32] text-white rounded-lg text-xs whitespace-nowrap transition-colors"
                   >
                     검토 및 상세
                   </Link>

@@ -779,7 +779,7 @@ function ApplyFormContent() {
 
           {/* 8. 예상 금액 요약 및 제출 */}
           <div className="bg-[#2b261f] text-[#faf8f5] p-6 sm:p-8 rounded-3xl space-y-4">
-            <div className="flex justify-between items-baseline border-b border-[#473e32] pb-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-4 border-b border-[#473e32] pb-4">
               <div>
                 <span className="text-xs uppercase tracking-widest text-[#c7b698] font-serif block">
                   Estimated Total
@@ -803,11 +803,11 @@ function ApplyFormContent() {
               </p>
             </div>
 
-            <div className="pt-2 flex gap-3">
+            <div className="pt-2 flex flex-col-reverse sm:flex-row gap-3">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="py-4 px-6 border border-[#5c5549] text-[#c9bfaf] hover:text-white rounded-full text-xs font-medium cursor-pointer"
+                className="w-full sm:w-auto py-3.5 sm:py-4 px-6 border border-[#5c5549] text-[#c9bfaf] hover:text-white rounded-full text-xs font-medium cursor-pointer text-center"
               >
                 약관 다시 보기
               </button>

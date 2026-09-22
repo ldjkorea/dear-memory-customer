@@ -37,22 +37,27 @@ export default function AdminContractsPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-[#e8e2d8] overflow-hidden shadow-sm">
+        <div className="px-4 py-2.5 bg-[#faf8f5] border-b border-[#e8e2d8] flex justify-between items-center text-[11px] text-[#73695c]">
+          <span>총 <strong className="text-[#2b261f]">{items.length}</strong>건의 발행 계약서</span>
+          <span className="sm:hidden text-[10px] text-[#8f7a56] font-medium">👉 좌우로 스크롤하여 확인</span>
+        </div>
+
         {loading ? (
           <div className="py-12 text-center text-xs text-[#8f7a56]">데이터를 불러오는 중입니다...</div>
         ) : items.length === 0 ? (
           <div className="py-12 text-center text-xs text-[#9e9484]">발행된 계약서가 없습니다.</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full min-w-[780px] text-left text-xs border-collapse">
               <thead>
-                <tr className="bg-[#faf8f5] border-b border-[#e8e2d8] text-[#6e5c3d] font-serif">
-                  <th className="py-3 px-4">계약번호</th>
-                  <th className="py-3 px-4">고객명 / 연락처</th>
-                  <th className="py-3 px-4">예식일시 / 장소</th>
-                  <th className="py-3 px-4">활성 버전</th>
-                  <th className="py-3 px-4">계약 총액</th>
-                  <th className="py-3 px-4">상태</th>
-                  <th className="py-3 px-4 text-right">미리보기 / 관리</th>
+                <tr className="bg-[#fcfbfa] border-b border-[#e8e2d8] text-[#6e5c3d] font-serif whitespace-nowrap">
+                  <th className="py-3 px-4 w-[140px]">계약번호</th>
+                  <th className="py-3 px-4 w-[160px]">고객명 / 연락처</th>
+                  <th className="py-3 px-4 w-[190px]">예식일시 / 장소</th>
+                  <th className="py-3 px-4 w-[90px]">활성 버전</th>
+                  <th className="py-3 px-4 w-[110px]">계약 총액</th>
+                  <th className="py-3 px-4 w-[110px]">상태</th>
+                  <th className="py-3 px-4 text-right w-[100px]">미리보기</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f1ede7]">
@@ -60,26 +65,26 @@ export default function AdminContractsPage() {
                   const snap = version?.snapshot;
                   return (
                     <tr key={contract.id} className="hover:bg-[#fdfaf6] transition-colors">
-                      <td className="py-3.5 px-4 font-mono font-semibold text-[#2b261f]">
+                      <td className="py-3.5 px-4 font-mono font-semibold text-[#2b261f] whitespace-nowrap align-middle">
                         {contract.contract_number}
                       </td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-medium text-[#2b261f] block">{snap?.customer_name}</span>
-                        <span className="text-[11px] text-[#73695c]">{snap?.customer_contact}</span>
+                      <td className="py-3.5 px-4 align-middle">
+                        <span className="font-medium text-[#2b261f] block truncate max-w-[150px] leading-tight">{snap?.customer_name}</span>
+                        <span className="text-[11px] text-[#73695c] whitespace-nowrap">{snap?.customer_contact}</span>
                       </td>
-                      <td className="py-3.5 px-4">
-                        <span className="text-[#2b261f] block">{snap?.wedding_date}</span>
-                        <span className="text-[11px] text-[#73695c]">{snap?.venue}</span>
+                      <td className="py-3.5 px-4 align-middle">
+                        <span className="text-[#2b261f] block whitespace-nowrap leading-tight">{snap?.wedding_date}</span>
+                        <span className="text-[11px] text-[#73695c] block truncate max-w-[180px]" title={snap?.venue}>{snap?.venue}</span>
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-[#8f7a56]">
-                        v{version?.version_number || 1}
+                      <td className="py-3.5 px-4 font-mono text-[#8f7a56] whitespace-nowrap align-middle">
+                        <span className="px-1.5 py-0.5 rounded bg-[#f5f1ea] text-[#8f7a56]">v{version?.version_number || 1}</span>
                       </td>
-                      <td className="py-3.5 px-4 font-serif text-[#2b261f]">
+                      <td className="py-3.5 px-4 font-serif text-[#2b261f] whitespace-nowrap align-middle font-medium">
                         {snap?.final_total_price.toLocaleString()}원
                       </td>
-                      <td className="py-3.5 px-4">
+                      <td className="py-3.5 px-4 whitespace-nowrap align-middle">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                          className={`px-2 py-1 rounded text-[10px] font-medium inline-block ${
                             contract.status === 'confirmed'
                               ? 'bg-emerald-100 text-emerald-800'
                               : contract.status === 'agreed'
@@ -93,10 +98,10 @@ export default function AdminContractsPage() {
                           {contract.status === 'draft' && '초안'}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap align-middle">
                         <Link
                           href={`/admin/contracts/${contract.id}/preview`}
-                          className="px-3 py-1.5 bg-[#2b261f] hover:bg-[#473e32] text-white rounded-lg text-xs font-medium inline-flex items-center gap-1 transition-colors"
+                          className="px-3 py-1.5 bg-[#2b261f] hover:bg-[#473e32] text-white rounded-lg text-xs font-medium inline-flex items-center gap-1 transition-colors shadow-2xs"
                         >
                           <Eye className="w-3 h-3" />
                           <span>미리보기</span>

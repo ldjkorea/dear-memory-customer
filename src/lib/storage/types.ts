@@ -12,6 +12,9 @@ export interface CustomerAppState {
   contractVersions: ContractVersion[];
   bookings: CustomerBooking[];
   payments: Payment[];
+  products?: any[];
+  options?: any[];
+  discounts?: any[];
   lastUpdated: string;
 }
 

@@ -154,7 +154,7 @@ export default function AdminRequestDetailPageClient() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <Link
           href="/admin/requests"
           className="text-xs text-[#8f7a56] hover:text-[#2b261f] flex items-center gap-1 font-medium"
@@ -166,7 +166,7 @@ export default function AdminRequestDetailPageClient() {
         {existingContract && (
           <Link
             href={`/admin/contracts/${existingContract.id}/preview`}
-            className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
+            className="w-full sm:w-auto justify-center px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors shadow-2xs"
           >
             <FileText className="w-3.5 h-3.5" />
             <span>이미 발행된 계약서 보기 ({existingContract.contract_number})</span>
@@ -397,21 +397,23 @@ export default function AdminRequestDetailPageClient() {
               </div>
             </div>
 
-            <div className="bg-[#2b261f] text-[#faf8f5] p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="bg-[#2b261f] text-[#faf8f5] p-5 sm:p-6 rounded-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
               <div>
                 <span className="text-[11px] text-[#c7b698] font-serif block">대표 확정 최종 계약 총액</span>
-                <span className="text-2xl font-serif text-white">{finalPrice.toLocaleString()}원</span>
-                <span className="text-[11px] text-[#9e9484] ml-2">
-                  (계약금 {depositAmount.toLocaleString()}원 / 잔금 {(finalPrice - depositAmount).toLocaleString()}원)
-                </span>
+                <div className="flex flex-wrap items-baseline gap-2 mt-0.5">
+                  <span className="text-2xl font-serif text-white">{finalPrice.toLocaleString()}원</span>
+                  <span className="text-[11px] text-[#c9bfaf]">
+                    (계약금 {depositAmount.toLocaleString()}원 / 잔금 {(finalPrice - depositAmount).toLocaleString()}원)
+                  </span>
+                </div>
               </div>
 
-              <div className="flex gap-2 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 <button
                   type="button"
                   onClick={handleSaveReview}
                   disabled={savingReview}
-                  className="px-4 py-2.5 bg-[#473e32] hover:bg-[#5c5549] text-white rounded-xl text-xs font-medium transition-colors cursor-pointer"
+                  className="w-full sm:w-auto justify-center px-4 py-2.5 bg-[#473e32] hover:bg-[#5c5549] text-white rounded-xl text-xs font-medium transition-colors cursor-pointer text-center"
                 >
                   {savingReview ? '저장 중...' : '검토 조건 저장'}
                 </button>
@@ -420,7 +422,7 @@ export default function AdminRequestDetailPageClient() {
                   type="button"
                   onClick={handleCreateContract}
                   disabled={creatingContract || !isAvailable}
-                  className="px-5 py-2.5 bg-[#8f7a56] hover:bg-[#a68e65] disabled:bg-gray-600 text-white rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
+                  className="w-full sm:w-auto justify-center px-5 py-2.5 bg-[#8f7a56] hover:bg-[#a68e65] disabled:bg-gray-600 text-white rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 shadow-md cursor-pointer text-center"
                 >
                   {creatingContract ? (
                     '계약서 발행 중...'
