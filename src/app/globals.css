@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #faf8f5;
+  --foreground: #22201d;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Serif KR", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 감성적인 스크롤바 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1ede7;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4c8b8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b5a48e;
+}
