@@ -19,25 +19,16 @@ export class RequestService {
   }
 
   /**
-   * 신규 문의/신청 접수 (Double-submit 방지 멱등키 지원)
+   * 신규 문의/신청 접수 (Double-submit 방지 멱등키 지원 및 왈라 상세 필드 수용)
    */
-  static async submitRequest(params: {
-    type: RequestType;
-    customer_name: string;
-    contact_type: 'phone' | 'kakao' | 'email';
-    contact_value: string;
-    wedding_date?: string;
-    is_date_undecided?: boolean;
-    wedding_time?: string;
-    venue?: string;
-    is_venue_undecided?: boolean;
-    hall_name?: string;
-    product_id?: string;
-    selected_option_ids?: string[];
-    selected_discount_ids?: string[];
-    customer_note?: string;
-    idempotency_key?: string;
-  }): Promise<CustomerRequest> {
+  static async submitRequest(
+    params: Partial<CustomerRequest> & {
+      type: RequestType;
+      customer_name: string;
+      contact_type: 'phone' | 'kakao' | 'email';
+      contact_value: string;
+    }
+  ): Promise<CustomerRequest> {
     // 멱등키 검사
     if (params.idempotency_key) {
       const existing = await RequestRepository.findByIdempotencyKey(params.idempotency_key);
@@ -47,6 +38,7 @@ export class RequestService {
     }
 
     const newRequest: CustomerRequest = {
+      ...params,
       id: 'req-' + Math.random().toString(36).substring(2, 11),
       request_number: this.generateRequestNumber(params.type),
       type: params.type,

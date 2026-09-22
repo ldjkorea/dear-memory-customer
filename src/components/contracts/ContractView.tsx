@@ -53,20 +53,38 @@ export function ContractView({ snapshot, isDraft = false }: Props) {
         </div>
       </div>
 
-      {/* 1. 계약 당사자 및 예식 정보 */}
+      {/* 1. 계약 당사자 및 예식/촬영 상세 정보 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-[#faf8f5] border border-[#f1ede7] mb-8 text-xs">
-        <div>
-          <h3 className="font-semibold text-[#8f7a56] uppercase tracking-wider mb-3">
-            [고객 (의뢰인) 정보]
+        <div className="space-y-3">
+          <h3 className="font-semibold text-[#8f7a56] uppercase tracking-wider">
+            [고객 (신랑·신부) 정보]
           </h3>
           <div className="space-y-1.5 text-[#5c5549]">
-            <p>• 성함: <span className="font-medium text-[#2b261f]">{snapshot.customer_name}</span></p>
-            <p>• 연락처: <span className="font-medium text-[#2b261f]">{snapshot.customer_contact}</span></p>
+            <p>
+              • 성함: <span className="font-medium text-[#2b261f]">{snapshot.customer_name}</span>
+            </p>
+            {snapshot.groom_phone && (
+              <p>• 신랑님 연락처: <span className="font-medium text-[#2b261f]">{snapshot.groom_phone}</span></p>
+            )}
+            {snapshot.bride_phone && (
+              <p>• 신부님 연락처: <span className="font-medium text-[#2b261f]">{snapshot.bride_phone}</span></p>
+            )}
+            {!snapshot.groom_phone && !snapshot.bride_phone && (
+              <p>• 연락처: <span className="font-medium text-[#2b261f]">{snapshot.customer_contact}</span></p>
+            )}
+            {snapshot.customer_email && (
+              <p>• 이메일: <span className="font-medium text-[#2b261f]">{snapshot.customer_email}</span></p>
+            )}
+            {(snapshot.groom_family_members || snapshot.bride_family_members) && (
+              <p>
+                • 직계가족 구성: 신랑({snapshot.groom_family_members || '-'}) / 신부({snapshot.bride_family_members || '-'})
+              </p>
+            )}
           </div>
         </div>
 
-        <div>
-          <h3 className="font-semibold text-[#8f7a56] uppercase tracking-wider mb-3">
+        <div className="space-y-3">
+          <h3 className="font-semibold text-[#8f7a56] uppercase tracking-wider">
             [예식 일정 및 장소]
           </h3>
           <div className="space-y-1.5 text-[#5c5549]">
@@ -76,6 +94,17 @@ export function ContractView({ snapshot, isDraft = false }: Props) {
               • 장소: <span className="font-medium text-[#2b261f]">{snapshot.venue}</span>{' '}
               {snapshot.hall_name && <span>({snapshot.hall_name})</span>}
             </p>
+            {snapshot.makeup_venue && (
+              <p>
+                • 메이크업: <span className="font-medium text-[#2b261f]">{snapshot.makeup_venue}</span>{' '}
+                {snapshot.makeup_out_time && <span>(아웃: {snapshot.makeup_out_time})</span>}
+              </p>
+            )}
+            {snapshot.shooting_requests && (
+              <p className="text-[11px] text-[#73695c] pt-1">
+                • 촬영 요청사항: {snapshot.shooting_requests}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -179,12 +208,12 @@ export function ContractView({ snapshot, isDraft = false }: Props) {
           <div>
             <span className="block text-[#c7b698] font-medium">계약금 (예약금)</span>
             <span className="text-sm font-serif text-white">{snapshot.deposit_amount.toLocaleString()}원</span>
-            <span className="block text-[#9e9484]">계약 후 48시간 이내 입금</span>
+            <span className="block text-[#9e9484]">신청 후 24시간 이내 입금 (72시간 내 환불 가능)</span>
           </div>
           <div>
             <span className="block text-[#c7b698] font-medium">잔금</span>
             <span className="text-sm font-serif text-white">{snapshot.balance_amount.toLocaleString()}원</span>
-            <span className="block text-[#9e9484]">예식 7일 전 완납</span>
+            <span className="block text-[#9e9484]">본식 1주 전(최소 7일 전) 완납</span>
           </div>
         </div>
       </div>

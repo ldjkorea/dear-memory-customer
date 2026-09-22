@@ -6,7 +6,7 @@
 import { CustomerAppState, IStorageAdapter } from './types';
 import { DEMO_REQUESTS, DEMO_CONTRACTS, DEMO_CONTRACT_VERSIONS } from '@/config/demoData';
 
-const STORAGE_KEY = 'dear_memory_customer_v1';
+const STORAGE_KEY = 'dear_memory_customer_v2';
 
 export function getInitialDemoState(): CustomerAppState {
   return {

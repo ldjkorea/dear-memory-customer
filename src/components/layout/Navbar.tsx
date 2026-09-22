@@ -50,20 +50,13 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* CTA & Admin Link */}
+        {/* CTA */}
         <div className="hidden md:flex items-center gap-4">
           <Link
             href="/apply"
-            className="px-4 py-2 text-xs uppercase tracking-widest bg-[#2b261f] text-[#faf8f5] rounded-full hover:bg-[#473e32] transition-colors shadow-sm"
+            className="px-5 py-2.5 text-xs uppercase tracking-widest bg-[#2b261f] text-[#faf8f5] rounded-full hover:bg-[#473e32] transition-colors shadow-sm font-medium"
           >
             촬영 신청
-          </Link>
-          <Link
-            href="/admin"
-            title="대표 관리자 패널"
-            className="p-2 text-[#8f7a56] hover:text-[#2b261f] transition-colors"
-          >
-            <ShieldCheck className="w-4 h-4" />
           </Link>
         </div>
 
@@ -98,16 +91,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="pt-2 flex justify-between items-center">
-            <Link
-              href="/admin"
-              onClick={() => setIsOpen(false)}
-              className="text-xs text-[#8f7a56] flex items-center gap-1"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              대표 관리자 모드
-            </Link>
-          </div>
         </div>
       )}
     </header>

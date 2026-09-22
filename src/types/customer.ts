@@ -54,7 +54,26 @@ export interface CustomerRequest {
   selected_discount_ids: string[];    // 신청한 혜택/할인 ID 목록
   
   // 요청사항
-  customer_note?: string;             // 고객 요청/문의 사항
+  customer_note?: string;             // 고객 요청/문의 사항 (통합 메모)
+
+  // 왈라(Walla) 폼 상세 필드 (신랑/신부 분리, 메이크업, 가족구성, 상세 요청)
+  groom_name?: string;                // 신랑님 성함
+  bride_name?: string;                // 신부님 성함
+  groom_phone?: string;               // 신랑님 연락처
+  bride_phone?: string;               // 신부님 연락처
+  customer_email?: string;            // 계약서 및 원본파일 수령용 이메일
+  makeup_venue?: string;              // 메이크업 샵 장소
+  makeup_in_time?: string;            // 메이크업 in 시간
+  makeup_out_time?: string;           // 메이크업 out 시간 (필수 동선)
+  groom_family_members?: string;      // 신랑님 직계가족 구성 (예: 부모님, 남동생)
+  bride_family_members?: string;      // 신부님 직계가족 구성 (예: 부모님, 언니)
+  mate_discount_info?: string;        // 짝꿍할인 정보 (상대방 "예식일_성함")
+  shooting_requests?: string;         // 촬영 시 세부 요청사항
+  retouch_requests?: string;          // 후보정 시 세부 요청사항 (피부/체형 등)
+  portfolio_agreed?: boolean;         // 포트폴리오 활용 동의 (10만원 할인)
+  referral_source?: string;           // 알게 된 경로 (인스타, 블로그 등)
+  sns_account?: string;               // SNS 주소 (후기 확인용)
+  terms_agreed?: boolean;             // 13개 조항 약관 동의 여부
   
   // 대표 검토 결과 (검토 후 생성)
   review?: RepresentativeReview;

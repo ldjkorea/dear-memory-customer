@@ -37,12 +37,24 @@ export interface ContractSnapshot {
   contract_number: string;
   customer_name: string;
   customer_contact: string;
+  groom_name?: string;
+  bride_name?: string;
+  groom_phone?: string;
+  bride_phone?: string;
+  customer_email?: string;
   
-  // 예식 정보
+  // 예식 및 메이크업 정보
   wedding_date: string;
   wedding_time: string;
   venue: string;
   hall_name?: string;
+  makeup_venue?: string;
+  makeup_out_time?: string;
+  groom_family_members?: string;
+  bride_family_members?: string;
+  mate_discount_info?: string;
+  shooting_requests?: string;
+  retouch_requests?: string;
   
   // 상품 스냅샷 (Config가 바뀌어도 변경되지 않는 당시 정보)
   product_name: string;
