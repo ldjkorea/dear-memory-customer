@@ -59,12 +59,17 @@ function ApplyFormContent() {
   const [groomFamily, setGroomFamily] = useState('');
   const [brideFamily, setBrideFamily] = useState('');
 
-  // 4. 상품 및 옵션/할인
+  // 4. 상품 및 옵션/할인 (URL 파라미터에서 자동 파싱 및 복원)
   const paramProduct = searchParams.get('product') || 'album_plus';
+  const paramOptions = searchParams.get('options')?.split(',').filter(Boolean) || [];
+  const paramDiscounts = searchParams.get('discounts')?.split(',').filter(Boolean) || ['portfolio'];
+
   const [productId, setProductId] = useState<string>(paramProduct);
-  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>([]);
-  const [portfolioAgreed, setPortfolioAgreed] = useState(true);
-  const [mateDiscountInfo, setMateDiscountInfo] = useState('');
+  const [selectedOptionIds, setSelectedOptionIds] = useState<string[]>(paramOptions);
+  const [portfolioAgreed, setPortfolioAgreed] = useState(paramDiscounts.includes('portfolio'));
+  const [mateDiscountInfo, setMateDiscountInfo] = useState(
+    paramDiscounts.includes('partner') ? '짝꿍할인 신청' : ''
+  );
 
   // 5. 요청사항 및 기타
   const [shootingRequests, setShootingRequests] = useState('');
@@ -80,6 +85,21 @@ function ApplyFormContent() {
     const p = searchParams.get('product');
     if (p && products.some((item) => item.id === p)) {
       setProductId(p);
+    }
+
+    const optStr = searchParams.get('options');
+    if (optStr !== null) {
+      const opts = optStr.split(',').filter(Boolean);
+      setSelectedOptionIds(opts);
+    }
+
+    const discStr = searchParams.get('discounts');
+    if (discStr !== null) {
+      const discs = discStr.split(',').filter(Boolean);
+      setPortfolioAgreed(discs.includes('portfolio'));
+      if (discs.includes('partner') && !mateDiscountInfo) {
+        setMateDiscountInfo('짝꿍할인 신청');
+      }
     }
   }, [searchParams, products]);
 
@@ -239,6 +259,33 @@ function ApplyFormContent() {
         >
           <span className="w-4 h-4 rounded-full bg-white/20 flex items-center justify-center text-[10px]">2</span>
           <span>신청서 작성</span>
+        </div>
+      </div>
+
+      {/* 선택된 견적 조건 요약 카드 */}
+      <div className="bg-[#f5f1ea] border border-[#d8cdbc] p-4 rounded-2xl text-xs space-y-1.5 shadow-sm">
+        <div className="flex justify-between items-center">
+          <span className="font-semibold text-[#2b261f] flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-[#8f7a56]" />
+            <span>선택하신 견적 조건이 신청서에 자동 적용되었습니다</span>
+          </span>
+          <span className="font-serif font-semibold text-sm text-[#8f7a56]">
+            예상 {estimatedTotal.toLocaleString()}원
+          </span>
+        </div>
+        <div className="text-[11.5px] text-[#5c5549] flex flex-wrap gap-x-3 gap-y-1 pt-1 border-t border-[#e3d9ca]">
+          <span>• 기본 상품: <strong className="text-[#2b261f]">{selectedProduct?.name}</strong> ({productPrice.toLocaleString()}원)</span>
+          {selectedOptionIds.length > 0 && (
+            <span>
+              • 추가 옵션: <strong className="text-[#2b261f]">{options.filter((o) => selectedOptionIds.includes(o.id)).map((o) => o.name).join(', ')}</strong> (+{optionsPrice.toLocaleString()}원)
+            </span>
+          )}
+          {portfolioAgreed && (
+            <span>• 신청 혜택: <strong className="text-emerald-700">포트폴리오 활용 동의 (-100,000원)</strong></span>
+          )}
+          {mateDiscountInfo && (
+            <span>• 신청 혜택: <strong className="text-emerald-700">짝꿍할인 (-50,000원)</strong></span>
+          )}
         </div>
       </div>
 
